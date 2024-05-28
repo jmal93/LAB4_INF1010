@@ -42,6 +42,11 @@
 *.idb
 *.pdb
 
+*.c.blob
+.ccls-cache/
+*-debug
+main
+
 # Kernel Module Compile Results
 *.mod*
 *.cmd

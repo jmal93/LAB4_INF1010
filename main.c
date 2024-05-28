@@ -12,65 +12,76 @@ struct no
 };
 
 void intervalo(t_no *arv, int lim_inf, int lim_sup);
-void insere(t_no *raiz, t_no *no_atual, int chave_nova);
-t_no *criaNo(void);
-t_no *busca(t_no *raiz, int chave);
+t_no* busca(t_no *arv, int chave);
+t_no* criaNo(void);
+t_no* insere(t_no* arv, int chave);
 
-int main(void)
-{
-	t_no *arvore = criaNo();
-	busca(arvore, 1);
+int main(void) {
+	t_no* arvore = criaNo();
+	insere(arvore, 15);
 	return 0;
 }
 
-t_no *criaNo(void)
+// cria um nó vazio
+t_no* criaNo(void)
 {
-	t_no *novoNo = (t_no *)malloc(sizeof(t_no));
-	if (novoNo == NULL)
-	{
-		printf("Erro na alocação de memória\n");
-		exit(1);
-	}
-
-	novoNo->ndesc = 0;
+	t_no* novoNo = (t_no*) malloc(sizeof(t_no));
+	novoNo->ndesc = 3;
 	for (int i = 0; i < MAX + 1; i++)
 		novoNo->ramo[i] = NULL;
-
+	for (int i = 0; i < 3; i++)
+		novoNo->chave[i] = (i+1)*10;
 	return novoNo;
 }
 
-t_no *busca(t_no *raiz, int chave)
+// retorna a página na qual a chave foi encontrada, retorna nulo caso não ache
+t_no* busca(t_no *arv, int chave)
 {
-	if (raiz == NULL)
+	if (arv == NULL)
 		return NULL;
-
 	for (int i = 0; i < MAX; i++)
-		if (raiz->chave[i] == chave)
-			return raiz;
+	{
+		if (arv->chave[i] == chave)
+			return arv;
+	}
 
 	int j = 0;
-	if (chave < raiz->chave[j])
-		busca(raiz->ramo[j], chave);
-	for (; j < MAX - 1; j++)
+	if (chave < arv->chave[j]) busca(arv->ramo[j], chave);
+	for (j = 1; j < MAX; j++)
 	{
-		if (raiz->chave[j] < chave && chave < raiz->chave[j + 1])
-			return busca(raiz->ramo[j], chave);
+		if (arv->chave[j] < chave && chave < arv->chave[j + 1])
+			busca(arv->ramo[j], chave);
 	}
-	if (raiz->chave[j] < chave)
-		return busca(raiz->ramo[j], chave);
+	if (arv->chave[j] < chave) busca(arv->ramo[j], chave);
 
 	return NULL;
 }
-
-void insere(t_no *raiz, t_no *no_atual, int chave_nova)
+void insereNaPos(t_no* arv, int chave)
 {
-	if (raiz->ndesc < MAX)
+	if (arv->chave[arv->ndesc-1] < chave)
 	{
-		raiz->chave[raiz->ndesc] = chave_nova;
-		raiz->ndesc++;
+		arv->chave[arv->ndesc] = chave;
+		arv->ndesc++;
 		return;
 	}
+	
+	int i;
+	for (i = 0; i < arv->ndesc; i++)
+	{
+		if (arv->chave[i] > chave) break;
+	}
 
-	t_no *no_novo = (t_no *)malloc(sizeof(t_no));
-	no_novo->ndesc = 0;
+	int j = arv->ndesc;
+	while (j > i)
+	{
+		arv->chave[j] = arv->chave[j - 1];
+		j--;
+	}
+	arv->chave[j] = chave;
+	arv->ndesc++;
+}
+
+t_no* insere(t_no* arv, int chave)
+{
+	insereNaPos(arv, chave);
 }
